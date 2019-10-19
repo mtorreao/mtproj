@@ -1,7 +1,6 @@
-A sample command-line application.
+# MTProj
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+> A console Application for help me develop new projects faster
 
 
 commands to execute
