@@ -1,16 +1,55 @@
-import 'dart:io';
 import 'package:args/args.dart';
-import 'package:mtproj/mtproj.dart' as mtproj;
+import 'package:args/command_runner.dart';
+import 'package:mtproj/commands/create_command.dart';
+import 'package:mtproj/version.dart';
 
 main(List<String> arguments) {
-  exitCode = 0;
-  final parser = ArgParser();
-  // ..addOption('zip', abbr: 'z')
-  // ..addOption('country', abbr: 'c', defaultsTo: 'de');
+  CommandRunner runner = configureCommand(arguments);
 
-  final argResults = parser.parse(arguments);
+  bool hasCommand = runner.commands.keys.any((x) => arguments.contains(x));
 
-  stderr.writeln('success');
+  if (hasCommand) {
+    executeCommand(runner, arguments);
+  } else {
+    ArgParser parser = ArgParser();
+    parser = runner.argParser;
+    var results = parser.parse(arguments);
+    executeOptions(results, arguments, runner);
+  }
+}
 
-  // weatherCli(argResults['zip'], argResults['country']);
+void executeOptions(
+    ArgResults results, List<String> arguments, CommandRunner runner) {
+  if (results.wasParsed("help") || arguments.isEmpty) {
+    print(runner.usage);
+  }
+
+  if (results.wasParsed("version")) {
+    version();
+  }
+}
+
+void executeCommand(CommandRunner runner, List<String> arguments) {
+  runner.run(arguments).catchError((error) {
+    if (error is! UsageException) throw error;
+    print(error);
+  });
+}
+
+CommandRunner configureCommand(List<String> arguments) {
+  var runner =
+      CommandRunner("mtproj", "CLI command tools for my personal projects")
+        // ..addCommand(StartCommand())
+        // ..addCommand(RunCommand())
+        // ..addCommand(GenerateCommand())
+        // ..addCommand(GenerateCommandAbbr())
+        // ..addCommand(UpdateCommand())
+        // ..addCommand(UpgradeCommand())
+        // ..addCommand(InstallCommand())
+        // ..addCommand(InstallCommandAbbr())
+        // ..addCommand(UninstallCommand())
+        ..addCommand(CreateCommand());
+
+  runner.argParser.addFlag("version", abbr: "v", negatable: false);
+  return runner;
 }

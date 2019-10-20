@@ -9,3 +9,8 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+
+bin/main.dart.aot
+bin/main.dart.aot.dill
+
+test_project/**
