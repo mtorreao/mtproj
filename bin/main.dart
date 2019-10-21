@@ -1,6 +1,7 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:mtproj/commands/create_command.dart';
+import 'package:mtproj/commands/git_command.dart';
 import 'package:mtproj/version.dart';
 
 main(List<String> arguments) {
@@ -39,7 +40,8 @@ void executeCommand(CommandRunner runner, List<String> arguments) {
 CommandRunner configureCommand(List<String> arguments) {
   var runner =
       CommandRunner("mtproj", "CLI command tools for my personal projects")
-        ..addCommand(CreateCommand());
+        ..addCommand(CreateCommand())
+        ..addCommand(GitCommand());
 
   runner.argParser.addFlag("version", abbr: "v", negatable: false);
   return runner;

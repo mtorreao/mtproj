@@ -33,7 +33,9 @@
             "program": "bin/main.dart",
             "args": [
                 "git",
-                "-h",
+                "-u",
+                "mtorreao",
+                "test_project"
             ],
             "request": "launch",
             "type": "dart"
