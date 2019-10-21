@@ -5,11 +5,35 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dart",
+            "name": "Create command",
             "program": "bin/main.dart",
             "args": [
                 "create",
+                // "-o",
+                // "com.org.aaa",
+                "-d",
+                "A test description",
                 "test_project",
+            ],
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Create help",
+            "program": "bin/main.dart",
+            "args": [
+                "create",
+                "-h",
+            ],
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Git command",
+            "program": "bin/main.dart",
+            "args": [
+                "git",
+                "-h",
             ],
             "request": "launch",
             "type": "dart"
