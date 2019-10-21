@@ -13,6 +13,7 @@ doc/api/
 bin/main.dart.aot
 bin/main.dart.aot.dill
 
+test_project
 test_project/**
 
 .env*
