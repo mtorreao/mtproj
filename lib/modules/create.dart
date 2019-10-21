@@ -17,15 +17,7 @@ Future create(String projectName, String description, String org) async {
     final exitCodeSlidy = await processSlidy.exitCode;
     print('Exitcode: $exitCodeSlidy');
     if (exitCodeSlidy == 0) {
-      final processGit = await Process.start('git', ['init'],
-          runInShell: true, workingDirectory: './$projectName');
-      await stdout.addStream(processGit.stdout);
-      await stderr.addStream(processGit.stderr);
-      final exitCodeGitInit = await processGit.exitCode;
-      print('Exitcode: $exitCodeGitInit');
-      if (exitCodeGitInit == 0) {
-        stdout.writeln('Success');
-      }
+      stdout.writeln('Success');
     }
   }
 }
