@@ -39,15 +39,6 @@ void executeCommand(CommandRunner runner, List<String> arguments) {
 CommandRunner configureCommand(List<String> arguments) {
   var runner =
       CommandRunner("mtproj", "CLI command tools for my personal projects")
-        // ..addCommand(StartCommand())
-        // ..addCommand(RunCommand())
-        // ..addCommand(GenerateCommand())
-        // ..addCommand(GenerateCommandAbbr())
-        // ..addCommand(UpdateCommand())
-        // ..addCommand(UpgradeCommand())
-        // ..addCommand(InstallCommand())
-        // ..addCommand(InstallCommandAbbr())
-        // ..addCommand(UninstallCommand())
         ..addCommand(CreateCommand());
 
   runner.argParser.addFlag("version", abbr: "v", negatable: false);
