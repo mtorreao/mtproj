@@ -5,7 +5,7 @@ Future create(String projectName, String description, String org) async {
       'flutter', ['create', ...getArgumentList(projectName, description, org)],
       runInShell: true);
 
-  // await stdout.addStream(process.stdout);
+  await stdout.addStream(process.stdout);
   await stderr.addStream(process.stderr);
   final exitcode = await process.exitCode;
   print('Exitcode: $exitCode');
@@ -23,7 +23,9 @@ Future create(String projectName, String description, String org) async {
       await stderr.addStream(processGit.stderr);
       final exitCodeGitInit = await processGit.exitCode;
       print('Exitcode: $exitCodeGitInit');
-      if (exitCodeGitInit == 0) {}
+      if (exitCodeGitInit == 0) {
+        stdout.writeln('Success');
+      }
     }
   }
 }

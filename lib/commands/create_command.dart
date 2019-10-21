@@ -12,7 +12,7 @@ class CreateCommand extends CommandBase {
     argParser.addOption('description',
         abbr: 'd',
         help:
-            "The description to use for your new Flutter project. This string ends up in the pubspec.yaml file. (defaults to \"A new Flutter project. Created by Slidy\")");
+            "The description to use for your new Flutter project. This string ends up in the pubspec.yaml file. (defaults to \"A new Flutter project. \")");
 
     argParser.addOption('org',
         abbr: 'o',
