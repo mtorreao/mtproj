@@ -14,6 +14,7 @@ dependencies:
   pubspec: ^0.1.1
   http: ^0.12.0+2
   dio: ^3.0.3
+  dotenv: ^1.0.0
 
 dev_dependencies:
   pedantic: ^1.7.0

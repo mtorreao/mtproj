@@ -15,4 +15,4 @@ bin/main.dart.aot.dill
 
 test_project/**
 
-github-api-token.dart
+.env*
