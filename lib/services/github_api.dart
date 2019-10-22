@@ -1,68 +1,67 @@
-import 'dart:convert';
+import 'package:graphql/client.dart';
+import 'package:mtproj/models/github_create_repo_response.dart';
 
-import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-import 'package:mtproj/services/base_api.dart';
+class GitHubApiService {
+  final HttpLink _httpLink = HttpLink(
+    uri: 'https://api.github.com/graphql',
+  );
+  AuthLink _authLink;
+  Link _link;
+  GraphQLClient _client;
 
-class GitHubApi extends BaseApi {
-  final baseUrl = 'https://api.github.com';
-
+  final String oauthtoken;
   final String username;
-  final String oauthToken;
 
-  GitHubApi(this.username, this.oauthToken) {
+  GitHubApiService(this.username, this.oauthtoken) {
     assert(this.username != null && this.username.isNotEmpty);
-    assert(this.oauthToken != null && this.oauthToken.isNotEmpty);
+    assert(this.oauthtoken != null && this.oauthtoken.isNotEmpty);
+    _authLink = AuthLink(
+      getToken: () async => 'token ${this.oauthtoken}',
+    );
+    _link = _authLink.concat(_httpLink);
+    _client = GraphQLClient(
+      cache: InMemoryCache(),
+      link: _link,
+    );
   }
 
-  getUser() async {
-    final url = '${baseUrl}/users/$username';
-    print(url);
-    final response = await http.get(url);
-    print(response.body);
-  }
+  @override
+  Future<GitHubCreateRepoResponse> createRepo(String repositoryName,
+      {bool private = false}) async {
+    const String createRepo = r'''
+        mutation AddRepo($input: CreateRepositoryInput!) {
+          createRepository(input: $input) {
+            clientMutationId,
+            repository {
+              createdAt,
+              url,
+              isPrivate,
+            }
+          }
+        }
+      ''';
 
-  checkUserScopes() async {
-    final url = '${baseUrl}/users/$username';
-    final response = await http.get(url, headers: {
-      ...getAuthorization(),
-    });
-    print(response.headers);
-    print(response.body);
-    print(response.request);
-    print(response.statusCode);
-  }
+    final MutationOptions options = MutationOptions(
+      document: createRepo,
+      variables: <String, dynamic>{
+        "input": {
+          "name": "test_project",
+          "visibility": private ? "PRIVATE" : "PUBLIC",
+        },
+      },
+    );
 
-  getUserRepos() async {
-    final url = '${baseUrl}/users/$username/repos';
-    final response = await http.get(url, headers: {
-      ...getAuthorization(),
-    });
-    print(response.headers);
-    print(response.body);
-    print(response.request);
-    print(response.statusCode);
-  }
-
-  Future<bool> createRepo(String repositoryName, {bool private = false}) async {
-    final url = '${baseUrl}/user/repos';
     try {
-      final response = await Dio()
-          .post(url, options: Options(headers: {...getAuthorization()}), data: {
-        'name': repositoryName,
-        // 'auto_init': 'false',
-        'private': private.toString(),
-        // 'gitignore_template': 'nanoc'
-      });
-      print(jsonEncode(response.data));
-      return response.statusCode == 200 || response.statusCode == 201;
-    } catch (e) {
+      final QueryResult result = await _client.mutate(options);
+
+      if (result.hasErrors) {
+        print(result.errors);
+      }
+
+      return GitHubCreateRepoResponse.fromJson(result.data);
+    } on CastError catch (e) {
       print(e);
     }
-    return false;
-  }
-
-  Map<String, String> getAuthorization() {
-    return {'Authorization': 'token $oauthToken'};
+    return null;
   }
 }

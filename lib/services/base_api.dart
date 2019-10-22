@@ -1,3 +1,5 @@
+import 'package:mtproj/models/base_model.dart';
+
 abstract class BaseApi {
-  Future<bool> createRepo(String repositoryName, {bool private = false});
+  Future<T> createRepo<T extends BaseModel>(String repositoryName, {bool private = false});
 }

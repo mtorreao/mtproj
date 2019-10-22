@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:dotenv/dotenv.dart' show load, env;
+import 'package:mtproj/models/base_model.dart';
 import 'package:mtproj/services/base_api.dart';
 import 'package:mtproj/services/github_api.dart';
-import 'package:dotenv/dotenv.dart' show load, env;
 
 git(String repoName, {String host, String username}) async {
   final hasUsername = username != null && username.isNotEmpty;
@@ -52,12 +53,15 @@ Future<int> gitCommit(String commitMessage, String repoName) async {
 Future<int> gitCreateRemoteRepo(
     String repoName, String hostName, String username) async {
   assert(repoName != null && repoName.isNotEmpty);
-  BaseApi host;
+  BaseApi api;
+  BaseModel createdRepo;
   if (hostName == 'github') {
-    host = GitHubApi(username, env['github_token']);
+    final api2 = GitHubApiService(username, env['github_token']);
+    createdRepo = await api2.createRepo(repoName);
   }
-  final created = await host.createRepo(repoName);
-  // return await process.exitCode;
+
+  if (createdRepo == null) return 2;
+  return createdRepo.hasErrors ? 0 : 1;
 }
 
 addStreamsToStd(Process process) async {
