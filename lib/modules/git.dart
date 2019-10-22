@@ -5,7 +5,8 @@ import 'package:mtproj/models/base_model.dart';
 import 'package:mtproj/services/base_api.dart';
 import 'package:mtproj/services/github_api.dart';
 
-git(String repoName, {String host, String username}) async {
+git(String repoName,
+    {String host, String username, bool private = false}) async {
   final hasUsername = username != null && username.isNotEmpty;
   final hasHost = host != null && host.isNotEmpty;
   load();

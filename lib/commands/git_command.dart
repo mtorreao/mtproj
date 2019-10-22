@@ -17,6 +17,11 @@ class GitCommand extends CommandBase {
         abbr: 'u',
         help:
             "The username to be used in remote repository. Without this, remote repo can't be acessed.");
+
+    argParser.addFlag('private',
+        abbr: 'p',
+        defaultsTo: false,
+        help: 'Send this flag to create repo as private. Default is public.');
   }
 
   void run() {
@@ -26,7 +31,8 @@ class GitCommand extends CommandBase {
     } else {
       git(argResults.rest.first,
           host: argResults['host'] == null ? 'github' : null,
-          username: argResults['username']);
+          username: argResults['username'],
+          private: argResults['private']);
     }
   }
 }
