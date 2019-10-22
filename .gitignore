@@ -16,4 +16,4 @@ bin/main.dart.aot.dill
 test_project
 test_project/**
 
-.env*
+.env
