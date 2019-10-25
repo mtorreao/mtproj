@@ -29,10 +29,11 @@ class GitCommand extends CommandBase {
       throw UsageException(
           "$invocationSufix not passed for a $name command", usage);
     } else {
-      git(argResults.rest.first,
+      final git = GitCommands(argResults.rest.first,
           host: argResults['host'] == null ? 'github' : null,
           username: argResults['username'],
           private: argResults['private']);
+      git.run();
     }
   }
 }
