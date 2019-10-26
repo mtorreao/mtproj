@@ -43,7 +43,7 @@ class GitCommands {
 
   Future<int> gitInit(String repoName) async {
     final process = await Process.start('git', ['init'],
-        runInShell: true, workingDirectory: './$repoName');
+        runInShell: true, workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Init exit code: $exitCode');
@@ -52,7 +52,7 @@ class GitCommands {
 
   Future<int> gitAddAll(String repoName) async {
     final process = await Process.start('git', ['add', '.'],
-        runInShell: true, workingDirectory: './$repoName');
+        runInShell: true, workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Add All exit code: $exitCode');
@@ -62,7 +62,7 @@ class GitCommands {
   Future<int> gitCommit(String commitMessage, String repoName) async {
     assert(commitMessage != null && commitMessage.isNotEmpty);
     final process = await Process.start('git', ['commit', '-m', commitMessage],
-        runInShell: true, workingDirectory: './$repoName');
+        runInShell: true, workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Commit exit code: $exitCode');

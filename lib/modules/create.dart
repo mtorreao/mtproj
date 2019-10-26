@@ -27,11 +27,13 @@ List<String> getArgumentList(
   List<String> list = [];
 
   if (description != null && description.isNotEmpty) {
-    list..add('-d')..add(description);
+    list..add('--description')..add(description);
   }
   if (org != null && org.isNotEmpty) {
-    list..add('-o')..add(org);
+    list..add('--org')..add(org);
   }
+  list.add('--no-pub');
+  list.add('--androidx');
   list.add(projectName);
   return list;
 }
