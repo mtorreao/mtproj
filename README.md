@@ -22,6 +22,6 @@ pub global activate --source path <PATH TO YOU PROJECT in my case it's ~/develop
 ### Features
 
 - [X] Comando create - cria um projeto em flutter e usa o slidy para gerar o template inicial.
-- [ ] Comando github - cria um repositorório no github e faz o push inital do projeto.
+- [X] Comando github - cria um repositorório no github e faz o push inital do projeto.
 - [ ] Comando widgets - baixa ou atualiza o repositório padrão com os templates que uso para projetos.
 - [ ] Comando firebase - implementa o firebase no projeto.
