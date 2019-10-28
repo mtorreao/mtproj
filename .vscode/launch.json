@@ -30,11 +30,14 @@
         },
         {
             "name": "Git command",
-            "program": "bin/main.dart",
+            "cwd": "C:/Users/matheus.torreao/estudos/projects/my_finances",
+            "program": "C:/Users/matheus.torreao/estudos/projects/mtproj/bin/main.dart",
             "args": [
                 "git",
                 "-u",
                 "mtorreao",
+                "-g", 
+                "e5fa4e702a4081e51e4fd7876508c481af1694d8",
                 "test_project"
             ],
             "request": "launch",

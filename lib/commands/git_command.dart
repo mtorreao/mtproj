@@ -22,17 +22,27 @@ class GitCommand extends CommandBase {
         abbr: 'p',
         defaultsTo: false,
         help: 'Send this flag to create repo as private. Default is public.');
+
+    argParser.addOption('github-token',
+        abbr: 'g',
+        help:
+            'GitHub OAuth 2.0 token for github repositories, this is required for this command meanwhile the config command is not ready yet.');
   }
 
   void run() {
     if (argResults.rest.isEmpty) {
       throw UsageException(
           "$invocationSufix not passed for a $name command", usage);
+    } else if (argResults['github-token'] == null) {
+      throw UsageException("github-token not passed for the command", usage);
+    } else if (argResults['username'] == null) {
+      throw UsageException("username not passed for the command", usage);
     } else {
       final git = GitCommands(argResults.rest.first,
           host: argResults['host'] == null ? 'github' : null,
           username: argResults['username'],
-          private: argResults['private']);
+          private: argResults['private'],
+          token: argResults['github-token']);
       git.run();
     }
   }

@@ -25,8 +25,7 @@ class GitHubApiService {
     );
   }
 
-  @override
-  Future<GitHubCreateRepoResponse> createRepo(String repositoryName,
+  Future<GitHubResponse> createRepo(String repositoryName,
       {bool private = false}) async {
     const String createRepo = r'''
         mutation AddRepo($input: CreateRepositoryInput!) {
@@ -45,7 +44,7 @@ class GitHubApiService {
       document: createRepo,
       variables: <String, dynamic>{
         "input": {
-          "name": "test_project",
+          "name": repositoryName,
           "visibility": private ? "PRIVATE" : "PUBLIC",
         },
       },
@@ -55,11 +54,46 @@ class GitHubApiService {
       final QueryResult result = await _client.mutate(options);
 
       if (result.hasErrors) {
+        if (result.errors.singleWhere((error) =>
+                error.message.toLowerCase() ==
+                'Name already exists on this account'.toLowerCase()) !=
+            null) {
+          return await getRepoInfo(repositoryName);
+        }
+      }
+
+      return GitHubResponse.fromJson(result.data['createRepository']['repository']);
+    } on CastError catch (e) {
+      print(e);
+    }
+    return null;
+  }
+
+  Future<GitHubResponse> getRepoInfo(String repoName) async {
+    const String getRepoInfo = r'''
+        query getRepoInfo($owner: String!, $name: String!) {
+          repository(owner: $owner, name: $name) {
+            url,
+            isPrivate,
+            createdAt
+          }
+        }
+      ''';
+
+    final options = QueryOptions(
+      document: getRepoInfo,
+      variables: <String, dynamic>{"owner": this.username, "name": repoName},
+    );
+
+    try {
+      final QueryResult result = await _client.query(options);
+
+      if (result.hasErrors) {
         print(result.errors);
       }
 
-      return GitHubCreateRepoResponse.fromJson(result.data);
-    } on CastError catch (e) {
+      return GitHubResponse.fromJson(result.data['repository']);
+    } catch (e) {
       print(e);
     }
     return null;

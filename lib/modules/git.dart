@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dotenv/dotenv.dart' show load, env;
 import 'package:mtproj/services/github_api.dart';
 
 class GitCommands {
@@ -9,21 +8,18 @@ class GitCommands {
   String username;
   String host;
   bool private;
-  String environment;
+  String token;
 
-  GitCommands(this.repoName, {this.host, this.username, this.private = false}) {
-    load();
-    environment = env['environment'];
-  }
+  GitCommands(this.repoName,
+      {this.host, this.username, this.private = false, this.token}) {}
 
   Future<bool> run() async {
     final hasUsername = username != null && username.isNotEmpty;
     final hasHost = host != null && host.isNotEmpty;
-    load();
     try {
       if (await gitInit(repoName) == 0) {
         if (await gitAddAll(repoName) == 0) {
-          if (await gitCommit('Initial commit', repoName) == 0) {
+          if (await gitCommit('Initial commit', repoName)) {
             if (hasHost && hasUsername && await gitCreateRemoteRepo()) {
               if (await gitRemoteAdd() == 0) {
                 if (await gitPush(upstream: true) == 0) {
@@ -42,8 +38,11 @@ class GitCommands {
   }
 
   Future<int> gitInit(String repoName) async {
-    final process = await Process.start('git', ['init'],
-        runInShell: true, workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
+    final process = await Process.start(
+      'git',
+      ['init'],
+      runInShell: true,
+    );
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Init exit code: $exitCode');
@@ -51,22 +50,28 @@ class GitCommands {
   }
 
   Future<int> gitAddAll(String repoName) async {
-    final process = await Process.start('git', ['add', '.'],
-        runInShell: true, workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
+    final process = await Process.start(
+      'git',
+      ['add', '.'],
+      runInShell: true,
+    );
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Add All exit code: $exitCode');
     return exitCode;
   }
 
-  Future<int> gitCommit(String commitMessage, String repoName) async {
+  Future<bool> gitCommit(String commitMessage, String repoName) async {
     assert(commitMessage != null && commitMessage.isNotEmpty);
-    final process = await Process.start('git', ['commit', '-m', commitMessage],
-        runInShell: true, workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
+    final process = await Process.start(
+      'git',
+      ['commit', '-m', commitMessage],
+      runInShell: true,
+    );
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Commit exit code: $exitCode');
-    return exitCode;
+    return exitCode == 0 || exitCode == 1;
   }
 
   Future<bool> gitCreateRemoteRepo() async {
@@ -74,9 +79,10 @@ class GitCommands {
     bool isCreated = false;
     try {
       if (this.host == 'github') {
-        final service = GitHubApiService(username, env['github_token']);
-        final response = await service.createRepo(repoName);
-        this.cloneUrl = response.createRepository.repository.url;
+        final service = GitHubApiService(username, this.token);
+        final response =
+            await service.createRepo(repoName, private: this.private);
+        this.cloneUrl = response.url;
         return true;
       }
     } catch (e) {
@@ -95,9 +101,10 @@ class GitCommands {
   Future<int> gitRemoteAdd() async {
     assert(cloneUrl != null && cloneUrl.isNotEmpty);
     final process = await Process.start(
-        'git', ['remote', 'add', 'origin', this.cloneUrl + '.git'],
-        runInShell: true,
-        workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
+      'git',
+      ['remote', 'add', 'origin', this.cloneUrl + '.git'],
+      runInShell: true,
+    );
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Remote Add exit code: $exitCode');
@@ -110,9 +117,11 @@ class GitCommands {
     if (upstream) subcommands.add('-u');
     subcommands.add(remote);
     subcommands.add(brach);
-    final process = await Process.start('git', subcommands,
-        runInShell: true,
-        workingDirectory: environment == 'DEBUG' ? './$repoName' : '');
+    final process = await Process.start(
+      'git',
+      subcommands,
+      runInShell: true,
+    );
     addStreamsToStd(process);
     final exitCode = await process.exitCode;
     print('Git Push exit code: $exitCode');
